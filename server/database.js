@@ -5,7 +5,7 @@ let db;
 
 async function initializeDatabase() {
     db = await open({
-        filename: './database_v2.sqlite',
+        filename: './database.sqlite',
         driver: sqlite3.Database
     });
 
@@ -16,7 +16,8 @@ async function initializeDatabase() {
             summary TEXT,
             content TEXT,
             source TEXT,
-            date TEXT,
+            publicationDate TEXT,
+            eventDate TEXT,
             imageUrl TEXT,
             type TEXT CHECK(type IN ('activity', 'news'))
         )
@@ -28,15 +29,15 @@ async function getNews() {
 }
 
 async function addNews(newsItem) {
-    const { title, summary, content, source, date, imageUrl, type } = newsItem;
+    const { title, summary, content, source, publicationDate, eventDate, imageUrl, type } = newsItem;
 
     if (type !== 'activity' && type !== 'news') {
         throw new Error('Invalid type: ' + type + '. Must be either "activity" or "news".');
     }
 
     return db.run(
-        'INSERT INTO news (title, summary, content, source, date, imageUrl, type) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [title, summary, content, source, date, imageUrl, type]
+        'INSERT INTO news (title, summary, content, source, publicationDate, eventDate, imageUrl, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [title, summary, content, source, publicationDate, eventDate, imageUrl, type]
     );
 }
 
