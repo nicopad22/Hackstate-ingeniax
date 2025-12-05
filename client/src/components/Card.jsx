@@ -1,16 +1,45 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import Tag from './Tag';
-import { generateTags } from '../utils/aiAgent';
+import { getTagColor } from '../utils/aiAgent';
 
-const Card = ({ item, layout = 'grid' }) => {
-    const tags = generateTags(item);
+const Card = ({ item, layout = 'grid', user }) => {
+    const tags = item.tags || [];
+    const [registering, setRegistering] = useState(false);
+    const [registered, setRegistered] = useState(false);
 
     // Formatting date
     const formatDate = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
         return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+    };
+
+    const handleInscription = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!user) {
+            alert("Please log in to register for activities.");
+            return;
+        }
+        setRegistering(true);
+        try {
+            const res = await fetch('/api/inscriptions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, eventId: item.id })
+            });
+            if (res.ok) {
+                setRegistered(true);
+            } else {
+                const data = await res.json();
+                alert(data.error || "Failed to register.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error registering.");
+        } finally {
+            setRegistering(false);
+        }
     };
 
     const isList = layout === 'list';
@@ -73,6 +102,19 @@ const Card = ({ item, layout = 'grid' }) => {
         color: '#9ca3af'
     };
 
+    const buttonStyle = {
+        marginTop: '0.5rem',
+        padding: '0.5rem 1rem',
+        backgroundColor: registered ? '#10b981' : '#2563eb',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '0.875rem',
+        fontWeight: 600,
+        alignSelf: 'flex-start'
+    };
+
     return (
         <article className="card-hover" style={cardStyle}>
             {item.imageUrl && (
@@ -82,11 +124,21 @@ const Card = ({ item, layout = 'grid' }) => {
                 <div>
                     <div style={{ marginBottom: '0.75rem' }}>
                         {tags.map((tag, idx) => (
-                            <Tag key={idx} text={tag.text} color={tag.color} />
+                            <Tag key={idx} text={tag} color={getTagColor(tag)} />
                         ))}
                     </div>
                     <h3 style={titleStyle}>{item.title}</h3>
                     <p style={summaryStyle}>{item.summary}</p>
+
+                    {item.type === 'activity' && (
+                        <button
+                            style={buttonStyle}
+                            onClick={handleInscription}
+                            disabled={registering || registered}
+                        >
+                            {registered ? 'Registered' : (registering ? '...' : 'Register')}
+                        </button>
+                    )}
                 </div>
 
                 <div style={footerStyle}>

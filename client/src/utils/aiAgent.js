@@ -12,48 +12,21 @@ const TAG_COLORS = {
     DEFAULT: '#6b7280' // gray-500
 };
 
-export function generateTags(item) {
-    const text = (item.title + ' ' + item.summary + ' ' + item.content).toLowerCase();
-    const tags = [];
+// Simple helper to associate colors with tags
+// In a real app, this might be dynamic or part of the tag object from DB
 
-    // Rule-based "AI"
-    if (text.includes('urgent') || text.includes('deadline') || text.includes('alert') || text.includes('closure')) {
-        tags.push({ text: 'Urgent', color: TAG_COLORS.URGENT });
-    }
 
-    if (text.includes('exam') || text.includes('study') || text.includes('library') || text.includes('course') || text.includes('grade')) {
-        tags.push({ text: 'Academic', color: TAG_COLORS.ACADEMIC });
-    }
 
-    if (text.includes('party') || text.includes('festival') || text.includes('music') || text.includes('social') || text.includes('club')) {
-        tags.push({ text: 'Social', color: TAG_COLORS.SOCIAL });
-    }
+const TAG_MAPPING = {
+    'Urgent': TAG_COLORS.URGENT,
+    'Academic': TAG_COLORS.ACADEMIC,
+    'Social': TAG_COLORS.SOCIAL,
+    'Career': TAG_COLORS.CAREER,
+    'Arts & Culture': TAG_COLORS.ART,
+    'Dining': TAG_COLORS.INFO,
+    'Technology': TAG_COLORS.ACADEMIC
+};
 
-    if (text.includes('career') || text.includes('job') || text.includes('internship') || text.includes('hire')) {
-        tags.push({ text: 'Career', color: TAG_COLORS.CAREER });
-    }
-
-    if (text.includes('art') || text.includes('painting') || text.includes('exhibition') || text.includes('creative')) {
-        tags.push({ text: 'Arts & Culture', color: TAG_COLORS.ART });
-    }
-
-    if (text.includes('food') || text.includes('menu') || text.includes('cafeteria')) {
-        tags.push({ text: 'Dining', color: TAG_COLORS.INFO });
-    }
-
-    if (text.includes('robot') || text.includes('tech') || text.includes('engineer') || text.includes('code')) {
-        tags.push({ text: 'Technology', color: TAG_COLORS.ACADEMIC });
-    }
-
-    // Default tag if none found
-    if (tags.length === 0) {
-        tags.push({ text: 'General', color: TAG_COLORS.DEFAULT });
-    }
-
-    // Add source as a tag automatically
-    if (item.source) {
-        tags.push({ text: item.source, color: TAG_COLORS.DEFAULT });
-    }
-
-    return tags;
+export function getTagColor(tagName) {
+    return TAG_MAPPING[tagName] || TAG_COLORS.DEFAULT;
 }

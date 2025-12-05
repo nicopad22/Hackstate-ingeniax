@@ -1,4 +1,5 @@
-const { addNews, getNews } = require('./database');
+const { addNews, getNews, clearNews, addNewsTag } = require('./database');
+const { generateTags } = require('./aiService');
 
 const dummyNews = [
     {
@@ -44,14 +45,21 @@ const dummyNews = [
 ];
 
 module.exports = async function seed() {
-    const existing = await getNews();
-    if (existing.length === 0) {
-        console.log('Seeding database...');
-        for (const item of dummyNews) {
-            await addNews(item);
+    console.log('Clearing existing data...');
+    await clearNews();
+
+    console.log('Seeding database...');
+    for (const item of dummyNews) {
+        const newsId = await addNews(item);
+        console.log(`Added news: ${item.title}`);
+
+        console.log(`Generating tags for: ${item.title}...`);
+        const tags = await generateTags(item);
+
+        for (const tag of tags) {
+            await addNewsTag(newsId, tag);
         }
-        console.log('Database seeded!');
-    } else {
-        console.log('Database already has data, skipping seed.');
+        console.log(`Tags added: ${tags.join(', ')}`);
     }
+    console.log('Database seeded!');
 };
