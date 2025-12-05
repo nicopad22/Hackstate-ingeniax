@@ -228,3 +228,39 @@ module.exports = {
 async function updateNewsSummary(id, summary) {
     return db.run('UPDATE news SET summary = ? WHERE id = ?', [summary, id]);
 }
+
+async function clearActivities() {
+    return db.run("DELETE FROM news WHERE type = 'activity'");
+}
+
+async function clearInscriptions() {
+    return db.run("DELETE FROM inscriptions");
+}
+
+async function updateNewsImage(id, imageUrl) {
+    return db.run("UPDATE news SET imageUrl = ? WHERE id = ?", [imageUrl, id]);
+}
+
+module.exports = {
+    initializeDatabase,
+    getNews,
+    addNews,
+    clearNews,
+    addUser,
+    getUser,
+    getUserById,
+    addInterest,
+    getInterests,
+    verifyUser,
+    addInscription,
+    getInscriptionsByUser,
+    getInscribedEventsByUser,
+    deleteInterest,
+    addNewsTag,
+    clearNewsTags,
+    deleteBadData,
+    updateNewsSummary,
+    clearActivities,
+    clearInscriptions,
+    updateNewsImage
+};

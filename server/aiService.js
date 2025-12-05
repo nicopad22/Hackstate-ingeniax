@@ -2,8 +2,29 @@ const fs = require('fs');
 const path = require('path');
 
 // Read API Key from hidden file
-const API_KEY = fs.readFileSync(path.join(__dirname, 'TOKEN'), 'utf-8').trim();
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+const TOKEN_PATH = path.join(__dirname, 'TOKEN');
+console.log("Reading API Key from:", TOKEN_PATH);
+// Read as binary buffer first to detect encoding issues if needed, but let's just clean the string
+let fileContent = fs.readFileSync(TOKEN_PATH, 'utf-8');
+
+// Handle Windows UTF-16 artifact (if read as UTF-8, null bytes might be present)
+// or just strange BOM characters at the start.
+// We will simply extract the valid API key pattern.
+// Google API keys usually start with AIza...
+const keyMatch = fileContent.match(/(AIza[0-9A-Za-z\-_]{35})/);
+
+let API_KEY;
+if (keyMatch) {
+    API_KEY = keyMatch[1];
+    console.log("Successfully extracted API Key.");
+} else {
+    // Fallback: try to just clean it
+    console.warn("Could not find standard 'AIza' pattern. Using raw cleanup.");
+    API_KEY = fileContent.replace(/[^a-zA-Z0-9\-_]/g, '');
+}
+
+console.log(`API Key loaded. Length: ${API_KEY.length}, First 4 chars: ${API_KEY.substring(0, 4)}`);
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
 const VALID_TAGS = [
     'Urgent',
@@ -206,13 +227,14 @@ async function generateInterestSuggestions(user, currentInterests, inscriptions,
 async function generateSummary(text) {
     const prompt = `
     You are an expert news summarizer.
-    Create a concise summary (max 2-3 sentences) of the following article content.
-    The summary should be engaging and informative, suitable for a news feed card.
+    Create a very short summary (maximum 10-15 words) of the following article content.
+    The summary MUST be in Spanish.
+    The summary should be engaging and informative, suitable for a mobile news feed card.
     
     Article Content:
     ${text.substring(0, 10000)} // Truncate to avoid token limits if necessary
     
-    Return ONLY the summary text.
+    Return ONLY the summary text in Spanish.
     `;
 
     try {
