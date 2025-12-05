@@ -100,20 +100,20 @@ function UserPage({ user }) {
         <div className="container user-page">
             <div className="user-layout">
                 <section className="left-panel">
-                    <h2>My Inscriptions</h2>
+                    <h2>Mis Inscripciones</h2>
                     <div className="inscriptions-grid">
                         {inscriptions.length === 0 ? (
-                            <p>No inscriptions yet.</p>
+                            <p>No hay inscripciones aún.</p>
                         ) : (
                             inscriptions.map(event => (
                                 <div key={event.id} className="card inscription-card">
                                     <div className="card-image" style={{ backgroundImage: `url(${event.imageUrl || 'https://via.placeholder.com/300'})` }}>
-                                        <span className="card-type">{event.type}</span>
+                                        <span className="card-type">{event.type === 'activity' ? 'Actividad' : 'Noticia'}</span>
                                     </div>
                                     <div className="card-content">
                                         <h3>{event.title}</h3>
                                         <p className="event-date">📅 {new Date(event.eventDate).toLocaleDateString()}</p>
-                                        <span className="inscription-badge">Registered: {new Date(event.inscriptionDate).toLocaleDateString()}</span>
+                                        <span className="inscription-badge">Inscrito: {new Date(event.inscriptionDate).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                             ))
@@ -122,7 +122,7 @@ function UserPage({ user }) {
                 </section>
 
                 <section className="right-panel">
-                    <h2>My Interests</h2>
+                    <h2>Mis Intereses</h2>
                     <div className="interests-section">
                         <div className="current-interests">
                             {localInterests.map((tag, idx) => (
@@ -138,19 +138,19 @@ function UserPage({ user }) {
                                 type="text"
                                 value={newInterest}
                                 onChange={(e) => setNewInterest(e.target.value)}
-                                placeholder="Add new interest..."
+                                placeholder="Añadir nuevo interés..."
                                 maxLength={30}
                                 onKeyDown={(e) => e.key === 'Enter' && handleAddInterest(newInterest)}
                             />
                             <button onClick={() => handleAddInterest(newInterest)} disabled={!newInterest.trim()}>
-                                Add
+                                Añadir
                             </button>
                         </div>
 
                         <div className="suggestions-section">
-                            <h3>Recommended for You (AI)</h3>
+                            <h3>Recomendado para Ti (IA)</h3>
                             {loadingSuggestions ? (
-                                <p>Thinking...</p>
+                                <p>Pensando...</p>
                             ) : (
                                 <div className="suggestions-list">
                                     {suggestions.map((suggestion, idx) => (

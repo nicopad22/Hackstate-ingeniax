@@ -11,14 +11,14 @@ const Card = ({ item, layout = 'grid', user }) => {
     const formatDate = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+        return new Intl.DateTimeFormat('es-ES', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
     };
 
     const handleInscription = async (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!user) {
-            alert("Please log in to register for activities.");
+            alert("Por favor inicia sesión para registrarte en actividades.");
             return;
         }
         setRegistering(true);
@@ -32,11 +32,11 @@ const Card = ({ item, layout = 'grid', user }) => {
                 setRegistered(true);
             } else {
                 const data = await res.json();
-                alert(data.error || "Failed to register.");
+                alert(data.error || "Error al registrarse.");
             }
         } catch (err) {
             console.error(err);
-            alert("Error registering.");
+            alert("Error registrando.");
         } finally {
             setRegistering(false);
         }
@@ -136,7 +136,7 @@ const Card = ({ item, layout = 'grid', user }) => {
                             onClick={handleInscription}
                             disabled={registering || registered}
                         >
-                            {registered ? 'Registered' : (registering ? '...' : 'Register')}
+                            {registered ? 'Inscrito' : (registering ? '...' : 'Inscribirse')}
                         </button>
                     )}
                 </div>
@@ -144,9 +144,9 @@ const Card = ({ item, layout = 'grid', user }) => {
                 <div style={footerStyle}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span>Pub: {formatDate(item.publicationDate)}</span>
-                        {item.eventDate && item.type === 'activity' && <span style={{ fontSize: '0.8em', color: '#2563eb' }}>Event: {formatDate(item.eventDate)}</span>}
+                        {item.eventDate && item.type === 'activity' && <span style={{ fontSize: '0.8em', color: '#2563eb' }}>Evento: {formatDate(item.eventDate)}</span>}
                     </div>
-                    <span style={{ fontWeight: 500 }}>{item.type === 'activity' ? 'Activity' : 'News'}</span>
+                    <span style={{ fontWeight: 500 }}>{item.type === 'activity' ? 'Actividad' : 'Noticia'}</span>
                 </div>
             </div>
         </article>

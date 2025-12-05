@@ -39,7 +39,8 @@ function Home({ user, type = 'news' }) {
     useEffect(() => {
         setPage(1);
         fetchNews(1, true);
-    }, [user]);
+        window.scrollTo(0, 0);
+    }, [user, type]);
 
     const handleLoadMore = () => {
         const nextPage = page + 1;
@@ -48,7 +49,7 @@ function Home({ user, type = 'news' }) {
     };
 
     const filteredItems = items.filter(item => item.type === type);
-    const title = type === 'news' ? 'News Feed' : 'Activities Feed';
+    const title = type === 'news' ? 'Muro de Noticias' : 'Muro de Actividades';
 
     /* If initial loading and no items, show screen. If loading more, show items + loader/button */
     if (loading && items.length === 0) return <LoadingScreen />
@@ -58,7 +59,7 @@ function Home({ user, type = 'news' }) {
             <Feed
                 items={filteredItems}
                 title={title}
-                emptyMessage={`No ${type} items found.`}
+                emptyMessage={`No se encontraron ${type === 'news' ? 'noticias' : 'actividades'}.`}
                 user={user}
                 onLoadMore={handleLoadMore}
                 hasMore={hasMore}

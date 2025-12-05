@@ -221,5 +221,10 @@ module.exports = {
     deleteInterest,
     addNewsTag,
     clearNewsTags,
-    deleteBadData
+    deleteBadData,
+    updateNewsSummary
 };
+
+async function updateNewsSummary(id, summary) {
+    return db.run('UPDATE news SET summary = ? WHERE id = ?', [summary, id]);
+}

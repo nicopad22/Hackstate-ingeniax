@@ -9,7 +9,7 @@ function FullScreenCard({ item, user }) {
     const handleInscription = async (e) => {
         e.stopPropagation();
         if (!user) {
-            alert("Please log in to register for activities.");
+            alert("Por favor inicia sesión para registrarte en actividades.");
             return;
         }
         setRegistering(true);
@@ -23,11 +23,11 @@ function FullScreenCard({ item, user }) {
                 setRegistered(true);
             } else {
                 const data = await res.json();
-                alert(data.error || "Failed to register.");
+                alert(data.error || "Error al registrarse.");
             }
         } catch (err) {
             console.error(err);
-            alert("Error registering.");
+            alert("Error registrando.");
         } finally {
             setRegistering(false);
         }
@@ -54,7 +54,7 @@ function FullScreenCard({ item, user }) {
                             {new Date(item.eventDate || item.publicationDate).toLocaleDateString()}
                         </span>
                         {item.type === 'activity' && (
-                            <span className="meta-badge">Activity</span>
+                            <span className="meta-badge">Actividad</span>
                         )}
                     </div>
 
@@ -64,7 +64,7 @@ function FullScreenCard({ item, user }) {
 
                     <div className="fullscreen-actions" style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
                         <button className="fullscreen-action-btn">
-                            Read More
+                            Leer Más
                         </button>
                         {item.type === 'activity' && (
                             <button
@@ -78,7 +78,7 @@ function FullScreenCard({ item, user }) {
                                     cursor: registered ? 'default' : 'pointer'
                                 }}
                             >
-                                {registered ? 'Registered' : (registering ? '...' : 'Register')}
+                                {registered ? 'Inscrito' : (registering ? '...' : 'Inscribirse')}
                             </button>
                         )}
                     </div>

@@ -24,21 +24,21 @@ function Login({ onLogin }) {
                 onLogin(data.user)
                 navigate('/')
             } else {
-                setError(data.error || 'Login failed')
+                setError(data.error || 'Inicio de sesión fallido')
             }
         } catch (err) {
-            setError('An error occurred. Please try again.')
+            setError('Ocurrió un error. Inténtalo de nuevo.')
         }
     }
 
     return (
         <div className="container auth-container">
             <div className="auth-card">
-                <h2>Login</h2>
+                <h2>Iniciar Sesión</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">Usuario</label>
                         <input
                             type="text"
                             id="username"
@@ -48,7 +48,7 @@ function Login({ onLogin }) {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Contraseña</label>
                         <input
                             type="password"
                             id="password"
@@ -57,7 +57,7 @@ function Login({ onLogin }) {
                             required
                         />
                     </div>
-                    <button type="submit" className="submit-btn">Login</button>
+                    <button type="submit" className="submit-btn">Iniciar Sesión</button>
                 </form>
             </div>
         </div>

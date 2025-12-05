@@ -36,51 +36,51 @@ function Signup({ onLogin }) { // Reuse onLogin to auto-login after signup if de
                 // or effectively "mock" login if we want. 
                 // But better UX is often just redirect to login with a success message, OR auto-login.
                 // I will implement "Redirect to Login" for clarity.
-                alert('Registration successful! Please login.')
+                alert('¡Registro exitoso! Por favor inicia sesión.')
                 navigate('/login')
             } else {
-                setError(data.error || 'Registration failed')
+                setError(data.error || 'El registro falló')
             }
         } catch (err) {
-            setError('An error occurred. Please try again.')
+            setError('Ocurrió un error. Inténtalo de nuevo.')
         }
     }
 
     return (
         <div className="container auth-container">
             <div className="auth-card">
-                <h2>Sign Up</h2>
+                <h2>Registrarse</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="fullName">Full Name</label>
+                        <label htmlFor="fullName">Nombre Completo</label>
                         <input name="fullName" placeholder="John Doe" onChange={handleChange} required />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">Usuario</label>
                         <input name="username" placeholder="johndoe" onChange={handleChange} required />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">Correo Electrónico</label>
                         <input type="email" name="email" placeholder="john@example.com" onChange={handleChange} required />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Contraseña</label>
                         <input type="password" name="password" onChange={handleChange} required />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="university">University</label>
+                        <label htmlFor="university">Universidad</label>
                         <input name="university" placeholder="Tech University" onChange={handleChange} />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="studyProgram">Study Program</label>
+                        <label htmlFor="studyProgram">Carrera</label>
                         <input name="studyProgram" placeholder="Computer Science" onChange={handleChange} />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="yearOnStudyProgram">Year of Study</label>
+                        <label htmlFor="yearOnStudyProgram">Año de Curso</label>
                         <input type="number" name="yearOnStudyProgram" placeholder="3" onChange={handleChange} />
                     </div>
-                    <button type="submit" className="submit-btn">Sign Up</button>
+                    <button type="submit" className="submit-btn">Registrarse</button>
                 </form>
             </div>
         </div>

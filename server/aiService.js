@@ -1,8 +1,9 @@
-// Native fetch is available in Node.js 18+
+const fs = require('fs');
+const path = require('path');
 
-// HARDCODED API KEY AS REQUESTED
-const API_KEY = "AIzaSyDK9Q0o8oGxWBBOoZwqDYSEFeB4Sihak_E";
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+// Read API Key from hidden file
+const API_KEY = fs.readFileSync(path.join(__dirname, 'TOKEN'), 'utf-8').trim();
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 const VALID_TAGS = [
     'Urgent',
@@ -201,4 +202,43 @@ async function generateInterestSuggestions(user, currentInterests, inscriptions,
     }
 }
 
-module.exports = { generateTags, rankNewsForUser, generateInterestSuggestions };
+
+async function generateSummary(text) {
+    const prompt = `
+    You are an expert news summarizer.
+    Create a concise summary (max 2-3 sentences) of the following article content.
+    The summary should be engaging and informative, suitable for a news feed card.
+    
+    Article Content:
+    ${text.substring(0, 10000)} // Truncate to avoid token limits if necessary
+    
+    Return ONLY the summary text.
+    `;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("AI API Error Body:", errorText);
+            throw new Error(response.statusText);
+        }
+
+        const data = await response.json();
+        if (data.candidates && data.candidates.length > 0) {
+            return data.candidates[0].content.parts[0].text.trim();
+        }
+        return null;
+    } catch (error) {
+        console.error("Error generating summary:", error);
+        return null;
+    }
+}
+
+module.exports = { generateTags, rankNewsForUser, generateInterestSuggestions, generateSummary };
