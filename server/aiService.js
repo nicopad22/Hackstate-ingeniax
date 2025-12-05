@@ -99,6 +99,10 @@ async function generateTags(newsItem) {
 }
 
 async function rankNewsForUser(user, interests, inscriptions, newsItems) {
+    // Optimization: Only rank the top 10 items to reduce latency. 
+    // The rest will remain in their default chronological order.
+    const itemsToRank = newsItems.slice(0, 10);
+
     // Prepare minimal data to save tokens
     // Resolve inscription event details (titles of events the user has registered for)
     const inscriptionLists = inscriptions.map(insc => {
@@ -116,7 +120,7 @@ async function rankNewsForUser(user, interests, inscriptions, newsItems) {
         registered_events: inscriptionLists
     };
 
-    const simplifiedNews = newsItems.map(item => ({
+    const simplifiedNews = itemsToRank.map(item => ({
         id: item.id,
         title: item.title,
         summary: item.summary,
@@ -140,13 +144,20 @@ async function rankNewsForUser(user, interests, inscriptions, newsItems) {
     `;
 
     try {
-        const response = await fetch(API_URL, {
+        const fetchPromise = fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: prompt }] }]
             })
         });
+
+        // Timeout after 2.5 seconds to ensure UI doesn't stall
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('AI Ranking Timeout')), 2500)
+        );
+
+        const response = await Promise.race([fetchPromise, timeoutPromise]);
 
         if (!response.ok) {
             throw new Error(`API Error: ${response.statusText}`);
@@ -161,7 +172,11 @@ async function rankNewsForUser(user, interests, inscriptions, newsItems) {
         }
         return [];
     } catch (error) {
-        console.error("Error ranking news:", error);
+        if (error.message === 'AI Ranking Timeout') {
+            console.warn("AI Ranking timed out - falling back to default order");
+        } else {
+            console.error("Error ranking news:", error);
+        }
         return [];
     }
 }

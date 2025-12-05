@@ -8,11 +8,59 @@ function Home({ user, type = 'news' }) {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
 
-    const fetchNews = (pageNum, reset = false) => {
+    useEffect(() => {
+        let active = true;
+        setPage(1);
+        setLoading(true);
+
+        const fetchItems = () => {
+            let url = `/api/news?page=1&limit=20&type=${type}`;
+            if (user) {
+                url += `&userId=${user.id}`;
+            }
+
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    if (active) {
+                        if (data.length < 20) {
+                            setHasMore(false);
+                        } else {
+                            setHasMore(true);
+                        }
+                        setItems(data);
+                        setLoading(false);
+                    }
+                })
+                .catch(err => {
+                    if (active) {
+                        console.error('Error fetching data:', err);
+                        setLoading(false);
+                    }
+                });
+        };
+
+        fetchItems();
+        window.scrollTo(0, 0);
+
+        return () => {
+            active = false;
+        };
+    }, [user, type]);
+
+    const fetchNews = (pageNum) => {
         let url = `/api/news?page=${pageNum}&limit=20&type=${type}`;
         if (user) {
             url += `&userId=${user.id}`;
         }
+
+        // We assume load more doesn't have the race condition issue as severely 
+        // because it's user triggered, but ideally we'd manage that too.
+        // For the main switching issue, the useEffect above handles it.
+        // But we need to keep fetchNews for "Load More".
 
         setLoading(true);
         fetch(url)
@@ -26,12 +74,7 @@ function Home({ user, type = 'news' }) {
                 } else {
                     setHasMore(true);
                 }
-
-                if (reset) {
-                    setItems(data);
-                } else {
-                    setItems(prev => [...prev, ...data]);
-                }
+                setItems(prev => [...prev, ...data]);
                 setLoading(false);
             })
             .catch(err => {
@@ -39,12 +82,6 @@ function Home({ user, type = 'news' }) {
                 setLoading(false);
             })
     };
-
-    useEffect(() => {
-        setPage(1);
-        fetchNews(1, true);
-        window.scrollTo(0, 0);
-    }, [user, type]);
 
     const handleLoadMore = () => {
         const nextPage = page + 1;
