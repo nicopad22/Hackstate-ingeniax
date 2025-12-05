@@ -33,8 +33,9 @@ app.get('/api/news', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
+        const type = req.query.type;
 
-        let news = await getNews(page, limit);
+        let news = await getNews(page, limit, type);
         const userId = req.query.userId;
 
         if (userId) {

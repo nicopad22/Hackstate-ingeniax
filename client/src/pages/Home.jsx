@@ -9,7 +9,11 @@ function Home({ user, type = 'news' }) {
     const [hasMore, setHasMore] = useState(true);
 
     const fetchNews = (pageNum, reset = false) => {
-        const url = user ? `/api/news?userId=${user.id}&page=${pageNum}&limit=20` : `/api/news?page=${pageNum}&limit=20`;
+        let url = `/api/news?page=${pageNum}&limit=20&type=${type}`;
+        if (user) {
+            url += `&userId=${user.id}`;
+        }
+
         setLoading(true);
         fetch(url)
             .then(res => {
@@ -48,7 +52,6 @@ function Home({ user, type = 'news' }) {
         fetchNews(nextPage, false);
     };
 
-    const filteredItems = items.filter(item => item.type === type);
     const title = type === 'news' ? 'Muro de Noticias' : 'Muro de Actividades';
 
     /* If initial loading and no items, show screen. If loading more, show items + loader/button */
@@ -57,7 +60,7 @@ function Home({ user, type = 'news' }) {
     return (
         <div className="page-container">
             <Feed
-                items={filteredItems}
+                items={items}
                 title={title}
                 emptyMessage={`No se encontraron ${type === 'news' ? 'noticias' : 'actividades'}.`}
                 user={user}

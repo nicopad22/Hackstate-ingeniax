@@ -61,16 +61,24 @@ async function initializeDatabase() {
     `);
 }
 
-async function getNews(page = null, limit = null) {
+async function getNews(page = null, limit = null, type = null) {
     let query = `
         SELECT n.*, GROUP_CONCAT(nt.tag_name) as tag_string
         FROM news n
         LEFT JOIN news_tags nt ON n.id = nt.news_id
+`;
+
+    const params = [];
+
+    if (type) {
+        query += ` WHERE n.type = ?`;
+        params.push(type);
+    }
+
+    query += `
         GROUP BY n.id
         ORDER BY n.id DESC
     `;
-
-    const params = [];
 
     if (page && limit) {
         const offset = (page - 1) * limit;
