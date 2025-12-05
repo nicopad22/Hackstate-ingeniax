@@ -123,9 +123,9 @@ async function rankNewsForUser(user, interests, inscriptions, newsItems) {
     const simplifiedNews = itemsToRank.map(item => ({
         id: item.id,
         title: item.title,
-        summary: item.summary,
+        // summary: item.summary, // Removed to reduce token usage and latency
         tags: item.tags,
-        type: item.type,
+        // type: item.type,
         date: item.eventDate
     }));
 
@@ -152,9 +152,9 @@ async function rankNewsForUser(user, interests, inscriptions, newsItems) {
             })
         });
 
-        // Timeout after 2.5 seconds to ensure UI doesn't stall
+        // Timeout after 1.5 seconds to ensure UI doesn't stall
         const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('AI Ranking Timeout')), 2500)
+            setTimeout(() => reject(new Error('AI Ranking Timeout')), 1500)
         );
 
         const response = await Promise.race([fetchPromise, timeoutPromise]);

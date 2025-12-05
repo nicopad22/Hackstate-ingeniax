@@ -42,8 +42,11 @@ app.get('/api/news', async (req, res) => {
             try {
                 const user = await getUserById(userId);
                 if (user) {
-                    const interests = await getInterests(userId);
-                    const inscriptions = await getInscriptionsByUser(userId);
+                    const [interests, inscriptions] = await Promise.all([
+                        getInterests(userId),
+                        getInscriptionsByUser(userId)
+                    ]);
+
                     // Rank the fetched page (or we'd need to fetch more to rank better)
                     const rankedIds = await rankNewsForUser(user, interests, inscriptions, news);
 
